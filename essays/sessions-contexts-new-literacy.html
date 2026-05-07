@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>On Sessions, Contexts, and the New Literacy</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body class="essay">
+
+<div class="progress"></div>
+
+<button class="music-toggle" id="music-toggle" aria-label="Toggle ambient music">
+  <span class="dot"></span>
+  <span class="label">ambient</span>
+</button>
+
+<main class="wrap">
+
+  <a href="../" class="back">&larr; back</a>
+
+  <header class="title">
+    <h1>On Sessions, Contexts, and the New Literacy</h1>
+    <p class="subtitle">What a beginner can build now, and the vocabulary they will need.</p>
+  </header>
+
+  <blockquote class="pullquote">
+    The student is not learning the language of the machine. The student is learning the language of speaking to someone who knows the language of the machine, and managing the conversation well.
+  </blockquote>
+
+  <section>
+    <p class="lead">When the first secure online purchase was made on a hot August afternoon in 1994 &mdash; a Sting CD, sold by a small site called NetMarket, paid for with an encrypted credit card number &mdash; the act felt so improbable that <em>The New York Times</em> ran a piece about it the next day. For most of the decade that followed, the idea of typing one's credit card into a webpage made ordinary people uneasy in a way that is now hard to remember. There were magazine covers warning against it. There were uncles, at Thanksgiving, who would not do it under any circumstances. There were whole companies, like the nervous-but-determined Amazon of 1997, whose entire business strategy hinged on convincing customers that this was, in fact, going to be all right. It took roughly fifteen years for the practice to become unremarkable, and another five for it to become, in many cases, the only practical way to buy a thing at all. The shift happened beneath everyone's notice, and then suddenly it was complete.</p>
+
+    <p>We are inside a similar transition right now, in a different domain. The activity that is being asked to feel ordinary is no longer paying for goods over a wire; it is talking to a computer in plain language and watching it write the program you wanted. The activity is uncomfortable for many of the same reasons the early internet purchase was uncomfortable. It does not feel like the action one is performing. It seems to skip steps. It depends on a kind of trust in something invisible. It produces a result one did not, in any traditional sense, do oneself. And as with that earlier shift, the discomfort is going to fade, faster than the last one, and what is going to replace it is a new ordinary that schoolchildren in a few years will treat as the natural state of affairs.</p>
+  </section>
+
+  <section>
+    <h2>A New Kind of Conversation</h2>
+
+    <p>The piece of software where this transition is happening most visibly is called Claude Code, and it is worth describing in plain terms because the description is short. Claude Code is a program that lives inside a terminal &mdash; the same kind of plain text window that programmers have used since the 1970s &mdash; but the language one speaks to it is English. You tell it what you want. It writes the code, runs the tests, fixes its own mistakes, and reports back. There is a keyboard, and there is a screen, and the keystrokes still matter, but the unit of work has changed from a line of code to a sentence of intent. A student who has never typed the word <code>import</code> in her life can sit down at this terminal and, an hour later, have a working website on the internet that she designed. This is not a hypothetical. This is what happens.</p>
+
+    <p>But there is now a small new vocabulary that anyone working this way needs to learn. It is not the vocabulary of variables and loops, which the assistant takes care of. It is the vocabulary of managing a conversation with a competent collaborator who has a finite memory. Five or six terms, all of them simple, all of them worth knowing. We will return to them shortly, but first let us imagine a concrete morning.</p>
+  </section>
+
+  <section>
+    <h2>First Day of School</h2>
+
+    <p>Picture a classroom in the autumn of 2026, or any autumn after this one. The course is called something like <em>Computational Literacy</em>. Half the students are seventeen and have never written a line of code; the other half have written a little. The teacher does not begin, as teachers used to begin, with the difference between an integer and a string. She begins by saying that by the end of the afternoon, each student will have three things: a personal website, hosted on the internet, with their name as the URL; a small machine learning model, trained on a few hundred photographs they take in the courtyard with their phones, that can tell the difference between, say, oak leaves and maple leaves; and a phone application that uses the camera to identify common objects in the room, in real time. The students do not believe her at first. By two in the afternoon, they do.</p>
+
+    <p>What actually happens in the room is this. Each student opens a terminal &mdash; a black window, white text &mdash; and starts a conversation with the assistant. The student who is making the leaf-classifier types something close to: <em>I want to train a small image classifier in Python that can tell the difference between oak and maple leaves. I will collect about two hundred photos. Help me set up the project, write the training script, and tell me what to do next.</em> The assistant replies with a list of files it intends to create, a brief explanation of what each will do, and asks one or two clarifying questions. <em>Do you want it to run on your laptop or in the cloud? Do you want a tiny model that fits on a phone, or a more accurate one that needs a server?</em> The student answers. The work begins. Within ten minutes there is a folder of code. Within thirty there is a model that runs. Within an hour the student is taking pictures with a friend, and seeing labels appear under each leaf in the courtyard.</p>
+
+    <p>The student making the website is having a parallel experience. <em>I want a personal site, white background, my name at the top, sections for my writing and my photos, easy to add things to later.</em> The assistant proposes a structure, writes the files, and walks the student through how to deploy it for free on a service like Netlify or Cloudflare Pages. The student types her name into a domain registrar at the cost of a sandwich, and the site is live. The address goes in the group chat. Friends visit it on the bus home.</p>
+
+    <p>The student building the camera application is doing the most ambitious project, but is not, as we might once have thought, doing the hardest one. She tells the assistant she wants an iPhone application that uses the camera and reports what it sees. The assistant explains the two paths: a quick path, which sends each frame to a hosted vision model and returns a label, and a slower-to-build path, which puts a small model on the device itself so it works offline. They choose the quick path for today. By the end of class, she is walking around the room and pointing her phone at things, and the labels appear, and there is laughter, because the model thinks the teacher's coffee mug is a small soup.</p>
+
+    <p>This is not magic. It is not even close to magic. It is the result of about seventy years of accumulated work in compilers, libraries, web standards, mobile platforms, and machine learning, all of which is now reachable from a single English-language interface. What the students are learning is not how to traverse that stack. The stack is doing its own work. What the students are learning is how to direct the work, and the directing has its own grammar.</p>
+  </section>
+
+  <section>
+    <h2>The Vocabulary</h2>
+
+    <p>There are six terms worth knowing, in roughly the order one encounters them.</p>
+
+    <p>The first is the <strong>session</strong>. A session is a single conversation with the assistant &mdash; what is on the screen from the moment the student opens the terminal to the moment she closes it. It is the unit of work, in the way that, for a previous generation, a file was the unit of work. A session can last a few minutes or several hours. The general rule, which the students learn quickly and against their instinct, is that a new task deserves a new session. When the leaf-classifier is done and the student moves on to writing the report about it, she does not keep going in the same session. She closes it and opens another.</p>
+
+    <p>The second is the <strong>context window</strong>. This is the amount of conversation the assistant can hold in its working memory at one time. In Claude Code, the window is one million tokens long, which is roughly seven hundred and fifty thousand words, or about ten ordinary novels. This is more than any student will ever fill in a session, but the size of the window is not the same as the quality of attention within it, which leads to the third term.</p>
+
+    <p>The third is <strong>context rot</strong>. As a session grows longer and longer, the assistant's attention gets spread across more material, and older, irrelevant content begins to distract from the current task. The phenomenon is well-named. It feels exactly like the slow staleness of a long meeting that has wandered. The cure for context rot is not to ask the assistant to try harder; it is to start fresh, or to summarize.</p>
+
+    <p>The fourth term is <strong><code>/clear</code></strong>, which is the command for closing a session and starting a new one. The student types it the same way one would close a notebook and open a fresh one. The screen empties. The conversation is gone. <em>We are starting a new task</em> is what <code>/clear</code> means. It is the most useful single command the students learn, and the one whose value they discover only after a frustrating long session in which they probably should have cleared half an hour earlier.</p>
+
+    <p>The fifth is <strong><code>/compact</code></strong>. Compacting is the middle ground between continuing and clearing. When the session is long but the work is not done, <code>/compact</code> asks the assistant to summarize the conversation so far in its own words, replace the old conversation with that summary, and keep going. It is lossy, like translating a long letter into a short one. Some details are lost. But the work continues, and the rot recedes. The student who has been training her leaf-classifier for an hour, and is now ready to deploy it, might type <code>/compact focus on what we built and the file structure, drop the debugging conversation</code>, and the assistant will keep what is load-bearing and shed what was scaffolding.</p>
+
+    <p>The sixth, and most quietly powerful, is <strong><code>/rewind</code></strong>. When the assistant has gone down a wrong path &mdash; has tried an approach that does not work, has installed a library that conflicts with another, has written code that fails the tests &mdash; the natural human instinct is to type, <em>that didn't work, try this instead.</em> This is almost always worse than rewinding. <code>/rewind</code>, or its keyboard shortcut of pressing the Escape key twice, jumps the conversation back to the moment before the wrong turn, as if it had never happened, and lets the student re-prompt with what was learned. The failed attempt and its mess are simply gone from the assistant's memory. The student says, this time more precisely, <em>do not use approach A; use approach B, because the foo module does not expose what we need.</em> Of all the commands, this is the one that takes the longest to internalize, because it requires accepting that the cleanest correction is often a re-do, not a reply.</p>
+
+    <p>There is one more concept, slightly more advanced, called the <strong>subagent</strong>. When a piece of work will produce a lot of intermediate output that the main conversation will not need to remember &mdash; searching through a large codebase, verifying a claim, reading a long document &mdash; the assistant can spin up a small worker, called a subagent, with its own fresh context window. The worker does the messy job in private, and returns only the final answer. The main session never sees the noise. The mental test, borrowed from the engineers at Anthropic who designed the feature, is whether you need the tool output again, or just the conclusion. If just the conclusion, send a subagent. The student building the camera app uses this when she asks the assistant to look through a large library of model weights and pick the one most appropriate for phone deployment. The library is enormous. Only the answer matters.</p>
+
+    <p>These six terms &mdash; session, context window, context rot, <code>/clear</code>, <code>/compact</code>, <code>/rewind</code>, and the subagent &mdash; are nearly the whole new literacy. There are others, but these are the ones a student needs on the first day. They are simple enough to teach in a class period, and they replace, for most practical purposes, what used to be weeks of syntax instruction. The student is not learning the language of the machine. The student is learning the language of speaking to someone who knows the language of the machine, and managing the conversation well.</p>
+  </section>
+
+  <section>
+    <h2>What Has Actually Changed</h2>
+
+    <p>It is worth pausing on what has changed. In 1995, learning to program meant learning a syntax &mdash; semicolons, brackets, declarations of types &mdash; and slowly, through years of practice, building up an internal model of how a machine executes instructions step by step. Today, learning to program, for most people and most things they want to make, means learning to specify clearly, to manage context, to know when to start over and when to continue, and to recognize the moment when one is fighting with a stale conversation rather than thinking about the actual problem. This is a different skill. It is not a lesser skill. It is a skill that draws on writing, on judgment, on the ability to imagine what is being asked of the machine and to check whether the answer makes sense. Many students who would have struggled with the older form of programming flourish in the new one, because the new one is closer to the kind of thinking that ordinary intelligent adults do all the time.</p>
+
+    <p>The student who has never coded before, and who at the start of the day was suspicious that any of this was real, ends the afternoon with three artifacts: a website with her own name on it, a small classifier that knows her trees, and a phone in her pocket that can describe the world to her through its camera. None of these are toys. The website is a real website. The classifier is a real model. The phone application is a real application that her mother can install on her own phone that night, which she does, with great pride, while pointing it at the cat. What the student has learned is not the same thing her older sister learned in a college course on Python five years earlier. It is something simpler in one direction and more demanding in another. It is the literacy of directing a powerful but forgetful collaborator, and it is going to be one of the basic literacies of the century she is growing up into.</p>
+  </section>
+
+  <section>
+    <h2>The Longer View</h2>
+
+    <p>This brings us back to the longer pattern, the one we traced through scribes and looms and Linotypes in an earlier piece. Each transition of this kind has produced, after the initial wave of dread, a wider and more diverse population of practitioners. The press did not produce fewer writers; it produced many more. The Linotype did not produce fewer newspapers; it produced more, with broader audiences. The personal computer did not produce fewer programmers; it produced an order of magnitude more, almost overnight. The natural-language interface to programming is doing the same thing now. The student in our classroom has joined a profession her parents could not have imagined her entering. She did not have to be the kind of person who liked typing semicolons. She had to be the kind of person who could describe what she wanted, recognize whether she got it, and steer the conversation back on course when it drifted.</p>
+
+    <p>Whether this turns out to be a more democratic profession, or a more thoughtful one, or simply a larger one, will be the work of the next decade to discover. But the discomfort some of us still feel about all of this, the slight metaphysical queasiness of typing English and getting a working program back, is going to feel, by the time these students are graduating from college, exactly the way that typing a credit card number into a stranger's website felt by the time the early internet kids were grown. It will feel like nothing. It will be how things are done. And the children of these children, asked one day what their parents found unsettling about the way they used to make things, will struggle to remember what the unsettling part was supposed to be.</p>
+  </section>
+
+</main>
+
+<script src="../script.js"></script>
+</body>
+</html>
