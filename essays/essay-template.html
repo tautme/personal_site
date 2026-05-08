@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Browser tab title -->
+<title>[[ESSAY TITLE]]</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body class="essay">
+
+<div class="progress"></div>
+
+<button class="music-toggle" id="music-toggle" aria-label="Toggle ambient music">
+  <span class="dot"></span>
+  <span class="label">ambient</span>
+</button>
+
+<main class="wrap">
+
+  <a href="../" class="back">&larr; back</a>
+
+  <header class="title">
+    <!-- Main title -->
+    <h1>[[ESSAY TITLE]]</h1>
+    <!-- One-line dek under the title -->
+    <p class="subtitle">[[SUBTITLE]]</p>
+  </header>
+
+  <!-- Pull quote: pick the single most striking sentence in the essay.
+       Delete this block if you don't want one. -->
+  <blockquote class="pullquote">
+    [[PULL QUOTE — one striking sentence from the essay]]
+  </blockquote>
+
+  <!-- OPENING SECTION
+       No <h2>. First paragraph gets class="lead" for the bigger opening style.
+       Use this for the hook / scene-setter. -->
+  <section>
+    <p class="lead">[[OPENING PARAGRAPH — sets the scene or stakes]]</p>
+
+    <p>[[SECOND PARAGRAPH of the opening, before any section breaks]]</p>
+  </section>
+
+  <!-- BODY SECTION
+       Duplicate this block for each section of the essay.
+       Each section gets one <h2> and however many <p> tags you need.
+       Inline formatting: <em>italic</em>, <strong>bold</strong>, <code>inline code</code>. -->
+  <section>
+    <h2>[[SECTION HEADING]]</h2>
+
+    <p>[[Paragraph]]</p>
+
+    <p>[[Paragraph]]</p>
+  </section>
+
+  <section>
+    <h2>[[SECTION HEADING]]</h2>
+
+    <p>[[Paragraph]]</p>
+  </section>
+
+  <!-- OPTIONAL FOOTNOTE / COLOPHON
+       Use for attribution, generation metadata, or source notes.
+       Delete this block if not needed. -->
+  <section class="footnote">
+    <p><small><em>[[Footnote text — attribution, date, source notes, etc.]]</em></small></p>
+  </section>
+
+</main>
+
+<script src="../script.js"></script>
+</body>
+</html>
