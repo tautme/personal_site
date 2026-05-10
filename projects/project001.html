@@ -1,25 +1,296 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>project001</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Camera Mouse</title>
 <style>
-  body { max-width: 720px; margin: 2em auto; padding: 0 1em;
-         font-family: 'Iowan Old Style', Palatino, Georgia, serif;
-         line-height: 1.6; color: #1a1a1a; background: #fff; }
-  a { color: #4a3f2f; }
-  img { max-width: 100%; height: auto; display: block; margin: 1em 0; }
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #0b0b0e; color: #e8e8ec;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace; height: 100%; overflow: hidden;
+    -webkit-tap-highlight-color: transparent; }
+  body { display: flex; flex-direction: column; }
+  header { padding: 10px 12px; border-bottom: 1px solid #222; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  h1 { font-size: 14px; margin: 0; font-weight: 600; letter-spacing: 0.04em; }
+  button { background: #1a1a20; color: #e8e8ec; border: 1px solid #333; padding: 6px 10px;
+    font: inherit; font-size: 12px; border-radius: 4px; cursor: pointer; }
+  button:active { background: #26262e; }
+  button:disabled { opacity: 0.4; cursor: default; }
+  .stats { font-size: 11px; color: #8a8a92; margin-left: auto; }
+  .stage { position: relative; flex: 1; min-height: 0; overflow: hidden; }
+  /* Camera preview pinned to a small corner */
+  #preview { position: absolute; right: 10px; bottom: 10px; width: 33vw; max-width: 220px;
+    border: 1px solid #333; border-radius: 6px; transform: scaleX(-1); /* mirror like a selfie even though it's rear */
+    z-index: 5; opacity: 0.85; }
+  /* The arena where the cursor moves */
+  #arena { position: absolute; inset: 16px; border: 1px dashed #444; border-radius: 8px; }
+  /* Cursor */
+  #cursor { position: absolute; left: 0; top: 0; width: 22px; height: 22px; pointer-events: none;
+    will-change: transform; transform: translate(0,0); z-index: 4; }
+  #cursor svg { display: block; }
+  /* Sample patch indicator drawn over preview */
+  #patchOverlay { position: absolute; right: 10px; bottom: 10px; pointer-events: none; z-index: 6; }
+  .controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  label { font-size: 11px; color: #aaa; display: flex; align-items: center; gap: 6px; }
+  input[type=range] { width: 90px; }
+  .msg { padding: 12px; font-size: 12px; color: #c66; }
+  .hint { font-size: 11px; color: #6a6a72; padding: 6px 12px; border-top: 1px solid #222; }
 </style>
 </head>
 <body>
+<header>
+  <h1>CAMERA MOUSE</h1>
+  <div class="controls">
+    <button id="startBtn">Start camera</button>
+    <button id="centerBtn" disabled>Center</button>
+    <label>Sensitivity <input id="sens" type="range" min="1" max="40" value="14"></label>
+    <label>Smooth <input id="smooth" type="range" min="0" max="90" value="55"></label>
+    <label><input id="invert" type="checkbox"> Invert</label>
+  </div>
+  <div class="stats" id="stats">idle</div>
+</header>
+<div class="stage">
+  <div id="arena"></div>
+  <div id="cursor">
+    <svg width="22" height="22" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg">
+      <path d="M2 2 L2 18 L7 13 L10 20 L13 19 L10 12 L17 12 Z"
+            fill="#fff" stroke="#000" stroke-width="1.4" stroke-linejoin="round"/>
+    </svg>
+  </div>
+  <video id="preview" playsinline muted autoplay></video>
+  <canvas id="patchOverlay"></canvas>
+</div>
+<div class="hint">Hold the phone steady, then tilt/pan to move the cursor. Tracks a small patch in the camera center via block matching.</div>
+<div class="msg" id="msg"></div>
 
-<p><a href="../">&larr; back</a></p>
+<script>
+(() => {
+  const video = document.getElementById('preview');
+  const arena = document.getElementById('arena');
+  const cursor = document.getElementById('cursor');
+  const stats = document.getElementById('stats');
+  const msg = document.getElementById('msg');
+  const startBtn = document.getElementById('startBtn');
+  const centerBtn = document.getElementById('centerBtn');
+  const sensEl = document.getElementById('sens');
+  const smoothEl = document.getElementById('smooth');
+  const invertEl = document.getElementById('invert');
+  const patchOverlay = document.getElementById('patchOverlay');
 
-<h1>project001</h1>
+  // Offscreen canvas to sample camera pixels (per project guideline)
+  const work = document.createElement('canvas');
+  const wctx = work.getContext('2d', { willReadFrequently: true });
 
-<p>Example of a standalone-file project. Edit this file or replace it with
-your own. Link to it from index.html.</p>
+  // Config
+  const W = 80, H = 60;          // downsampled frame size for speed
+  const PATCH = 16;              // patch side
+  const SEARCH = 6;              // ± search window in pixels (downsampled)
+
+  // State
+  let stream = null;
+  let running = false;
+  let prevPatch = null;          // Uint8 grayscale of previous patch
+  let cx = 0, cy = 0;            // cursor position in arena coords (px)
+  let vx = 0, vy = 0;            // smoothed velocity
+  let lastT = 0;
+  let frames = 0, fpsT = 0, fps = 0;
+
+  work.width = W; work.height = H;
+
+  // Resize patch overlay to match preview, draw a tiny crosshair
+  function drawPatchOverlay() {
+    const r = video.getBoundingClientRect();
+    const stageR = video.parentElement.getBoundingClientRect();
+    const w = r.width, h = r.height;
+    patchOverlay.width = w; patchOverlay.height = h;
+    patchOverlay.style.width = w + 'px';
+    patchOverlay.style.height = h + 'px';
+    patchOverlay.style.right = (stageR.right - r.right) + 'px';
+    patchOverlay.style.bottom = (stageR.bottom - r.bottom) + 'px';
+    const ctx = patchOverlay.getContext('2d');
+    ctx.clearRect(0,0,w,h);
+    // Patch box centered, scaled from PATCH/W of preview width
+    const bw = w * (PATCH / W);
+    const bh = h * (PATCH / H);
+    const bx = (w - bw) / 2, by = (h - bh) / 2;
+    ctx.strokeStyle = '#7cf';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(bx, by, bw, bh);
+  }
+
+  function placeCursor(x, y) {
+    cursor.style.transform = `translate(${x}px,${y}px)`;
+  }
+
+  function clampCursor() {
+    const a = arena.getBoundingClientRect();
+    const stage = arena.parentElement.getBoundingClientRect();
+    // arena is positioned with inset:16 in stage; convert arena local -> page
+    const maxX = a.width - 22;
+    const maxY = a.height - 22;
+    cx = Math.max(0, Math.min(maxX, cx));
+    cy = Math.max(0, Math.min(maxY, cy));
+    // cursor is positioned at stage 0,0; arena inset is 16
+    const offX = a.left - stage.left;
+    const offY = a.top - stage.top;
+    placeCursor(cx + offX, cy + offY);
+  }
+
+  function centerCursor() {
+    const a = arena.getBoundingClientRect();
+    cx = (a.width - 22) / 2;
+    cy = (a.height - 22) / 2;
+    clampCursor();
+  }
+
+  // Convert RGBA to grayscale Uint8Array
+  function toGray(imgData) {
+    const d = imgData.data;
+    const out = new Uint8Array(imgData.width * imgData.height);
+    for (let i = 0, j = 0; i < d.length; i += 4, j++) {
+      // luma
+      out[j] = (d[i] * 77 + d[i+1] * 150 + d[i+2] * 29) >> 8;
+    }
+    return out;
+  }
+
+  // Extract a PATCH×PATCH square from grayscale at (x0,y0)
+  function extractPatch(gray, w, x0, y0) {
+    const out = new Uint8Array(PATCH * PATCH);
+    for (let y = 0; y < PATCH; y++) {
+      const src = (y0 + y) * w + x0;
+      out.set(gray.subarray(src, src + PATCH), y * PATCH);
+    }
+    return out;
+  }
+
+  // Sum of absolute differences between previous patch and a candidate window in current gray
+  function sad(prev, gray, w, x0, y0) {
+    let s = 0;
+    for (let y = 0; y < PATCH; y++) {
+      const srcG = (y0 + y) * w + x0;
+      const srcP = y * PATCH;
+      for (let x = 0; x < PATCH; x++) {
+        s += Math.abs(prev[srcP + x] - gray[srcG + x]);
+        if (s > 1e9) return s; // safety
+      }
+    }
+    return s;
+  }
+
+  // Find best (dx,dy) in ±SEARCH that matches prevPatch within current gray, centered at frame center
+  function bestShift(prev, gray, w, h) {
+    const cx0 = (w - PATCH) >> 1;
+    const cy0 = (h - PATCH) >> 1;
+    let bestS = Infinity, bestDx = 0, bestDy = 0;
+    for (let dy = -SEARCH; dy <= SEARCH; dy++) {
+      const y0 = cy0 + dy;
+      if (y0 < 0 || y0 + PATCH > h) continue;
+      for (let dx = -SEARCH; dx <= SEARCH; dx++) {
+        const x0 = cx0 + dx;
+        if (x0 < 0 || x0 + PATCH > w) continue;
+        const s = sad(prev, gray, w, x0, y0);
+        if (s < bestS) { bestS = s; bestDx = dx; bestDy = dy; }
+      }
+    }
+    return { dx: bestDx, dy: bestDy, score: bestS };
+  }
+
+  function tick(t) {
+    if (!running) return;
+    requestAnimationFrame(tick);
+    if (video.readyState < 2) return;
+
+    // Draw mirrored to match what the user sees? No — track raw camera pixels.
+    wctx.drawImage(video, 0, 0, W, H);
+    const img = wctx.getImageData(0, 0, W, H);
+    const gray = toGray(img);
+
+    // Take a fresh center patch each frame as the "previous" to compare against next? No:
+    // we compare *previous* patch to *current* frame to estimate motion since last frame.
+    if (prevPatch) {
+      const { dx, dy, score } = bestShift(prevPatch, gray, W, H);
+      // Scale shift by sensitivity -> arena pixels
+      const sens = +sensEl.value;
+      const sm = +smoothEl.value / 100;
+      const sign = invertEl.checked ? -1 : 1;
+      // Camera moves right => scene shifts left in image => dx negative.
+      // We want cursor to follow the camera's motion direction => negate dx.
+      const tx = -dx * sens * sign;
+      const ty =  dy * sens * sign; // y already increases downward in image
+      vx = vx * sm + tx * (1 - sm);
+      vy = vy * sm + ty * (1 - sm);
+      // Deadzone for tiny noise
+      if (Math.abs(vx) < 0.15) vx = 0;
+      if (Math.abs(vy) < 0.15) vy = 0;
+      cx += vx; cy += vy;
+      clampCursor();
+
+      // FPS + score
+      frames++;
+      if (t - fpsT > 500) {
+        fps = (frames * 1000 / (t - fpsT)) | 0;
+        frames = 0; fpsT = t;
+      }
+      stats.textContent = `${fps} fps   shift ${dx},${dy}   score ${score|0}`;
+    }
+    // Update previous patch from current center for next frame
+    const cx0 = (W - PATCH) >> 1;
+    const cy0 = (H - PATCH) >> 1;
+    prevPatch = extractPatch(gray, W, cx0, cy0);
+  }
+
+  async function start() {
+    msg.textContent = '';
+    if (!navigator.mediaDevices?.getUserMedia) {
+      msg.textContent = 'getUserMedia not available. Serve via HTTPS or localhost.';
+      return;
+    }
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: 'environment' }, width: { ideal: 640 }, height: { ideal: 480 } },
+        audio: false
+      });
+      video.srcObject = stream;
+      await video.play();
+      running = true;
+      startBtn.textContent = 'Stop camera';
+      centerBtn.disabled = false;
+      centerCursor();
+      drawPatchOverlay();
+      lastT = performance.now(); fpsT = lastT;
+      requestAnimationFrame(tick);
+    } catch (e) {
+      msg.textContent = 'Camera error: ' + (e?.message || e);
+    }
+  }
+
+  function stop() {
+    running = false;
+    if (stream) stream.getTracks().forEach(t => t.stop());
+    stream = null;
+    startBtn.textContent = 'Start camera';
+    centerBtn.disabled = true;
+    stats.textContent = 'idle';
+  }
+
+  // Single user-gesture handler (iOS requirement)
+  startBtn.addEventListener('click', () => {
+    if (running) stop(); else start();
+  });
+  centerBtn.addEventListener('click', () => { centerCursor(); vx = vy = 0; });
+
+  window.addEventListener('resize', () => {
+    drawPatchOverlay();
+    clampCursor();
+  });
+  // Reflow patch overlay once video has metadata
+  video.addEventListener('loadedmetadata', drawPatchOverlay);
+  video.addEventListener('playing', drawPatchOverlay);
+})();
+</script>
 
 </body>
 </html>
