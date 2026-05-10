@@ -1,51 +1,54 @@
 # Personal Site
 
-A small static site. Open `index.html` in a browser; everything works.
+A small static site, kept deliberately simple. Open `index.html` in a browser; everything works.
 
 ## How to add things
 
+Everything is added by editing `index.html` directly. No build step, no auto-loaders.
+
+**New project**
+
+Projects live in `projects/` and are named `project001` through `project999`. Two patterns work:
+
+- Standalone file: `projects/project001.html`
+- Folder (use this when the project has assets): `projects/project002/index.html`
+
+Then add one line to `index.html` under the Projects section:
+
+```html
+<li><a href="projects/project001.html">project001 &mdash; title</a></li>
+<li><a href="projects/project002/">project002 &mdash; title</a></li>
+```
+
 **New essay**
-1. Drop an `.html` file in `essays/`
+
+1. Drop a `.html` file in `essays/` (use `essays/essay-template.html` as a starting point)
 2. Add one line to `index.html`:
    ```html
    <li><a href="essays/your-file.html">Title</a></li>
    ```
 
-**New project**
-1. Drop an `.html` file in `projects/`
-2. Add one line to `index.html`:
-   ```html
-   <li><a href="projects/your-file.html">Title</a></li>
-   ```
-
 **New photo**
-- Name it `1.jpg`, `2.jpg`, `3.jpg`, ... and drop it in `photos/`.
-- The gallery loads them automatically. No editing.
-- Other extensions work too: `.jpeg`, `.png`, `.webp`, `.gif`.
-- Numbers must be sequential — gaps stop the loader.
 
-**New music track**
-- Name it `1.mp3`, `2.mp3`, ... and drop it in `music/`.
-- Auto-loads as audio players. Same rules as photos.
-- Other extensions: `.m4a`, `.ogg`, `.wav`.
+Drop the file in `photos/` and add one line in the Photos section of `index.html`:
 
-**Update bio / about**
-- Edit the top paragraphs of `index.html`. That's the only place "about" lives.
+```html
+<img src="photos/your-photo.jpg" alt="">
+```
+
+**Update bio**
+
+Edit the top paragraphs of `index.html`.
 
 ## Files
 
-- `index.html` — homepage. The only page you edit when adding content.
-- `style.css` — all visual styling.
-- `script.js` — auto-loaders for photos and music; reading-progress bar and ambient music for essay pages.
-- `essays/`, `projects/` — sub-pages, one HTML file each.
-- `photos/`, `music/` — drop numbered files here.
+- `index.html` &mdash; homepage. Bare-bones, all styling inline. The only page you edit when adding content.
+- `projects/` &mdash; one file or folder per project (`project001` &hellip; `project999`).
+- `essays/` &mdash; one HTML file per essay. Essay pages still use `style.css` and `script.js` for typography and reading-progress bar.
+- `photos/` &mdash; image files referenced from `index.html`.
+- `music/` &mdash; audio files (currently unused on the homepage).
+- `style.css`, `script.js` &mdash; used by essay pages only. The homepage does not depend on them.
 
 ## Hosting
 
-Drop the folder onto Netlify, GitHub Pages, Cloudflare Pages, or any static host. Locally, opening `index.html` in a browser works for everything except the music auto-loader (which uses `fetch` and needs `http://` not `file://`). Run `python3 -m http.server` in the folder for a quick local server.
-
-## Future hooks
-
-- **Buy me a coffee / Patreon** — uncomment the support block at the bottom of `index.html`.
-- **Search** — the site is small enough that browser Cmd-F covers most cases. If you want fuzzy search later, [Pagefind](https://pagefind.app/) is the simplest drop-in.
-- **Per-user login** — when needed, host on Netlify or Cloudflare and use their built-in access controls. No code changes required.
+Drop the folder onto Netlify, GitHub Pages, Cloudflare Pages, or any static host. Locally, opening `index.html` in a browser works. For essay pages or anything that uses `fetch`, run `python3 -m http.server` in the folder.
