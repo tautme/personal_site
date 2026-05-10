@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>No Enemy — A Reader's Reissue</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Italiana&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+
+:root {
+  --paper: #f4ecdc;
+  --paper-deep: #ece1c8;
+  --ink: #1a1410;
+  --ink-soft: #3a2e25;
+  --ink-fade: #6b5b4c;
+  --rule: #c9b896;
+  --accent: #7a1c1c;
+  --accent-soft: #a83838;
+  --highlight: #f7e8a4;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Cormorant Garamond', 'EB Garamond', Garamond, 'Times New Roman', serif;
+  font-size: 19px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  background-image:
+    radial-gradient(ellipse at top, rgba(255,255,255,0.4), transparent 70%),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0,
+      transparent 3px,
+      rgba(60,40,20,0.012) 3px,
+      rgba(60,40,20,0.012) 4px
+    );
+}
+::selection { background: var(--highlight); color: var(--ink); }
+a { color: var(--accent); text-decoration: none; border-bottom: 1px solid currentColor; }
+a:hover { color: var(--accent-soft); }
+.container { max-width: 1180px; margin: 0 auto; padding: 0 36px; }
+hr.rule { border: 0; height: 1px; background: var(--rule); margin: 2.5rem 0; }
+hr.dot { border: 0; text-align: center; margin: 2rem 0; }
+hr.dot::before { content: '· · ·'; color: var(--ink-fade); letter-spacing: 0.6em; font-size: 1rem; }
+.smallcaps { font-variant: small-caps; letter-spacing: 0.08em; }
+.eyebrow {
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--ink-fade);
+}
+
+.hero {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  align-items: stretch;
+}
+.hero-left {
+  padding: 80px 60px 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-right: 1px solid var(--rule);
+  position: relative;
+}
+.hero-left::after {
+  content: '';
+  position: absolute;
+  right: 0; top: 0; bottom: 0;
+  width: 1px;
+  background: var(--rule);
+  box-shadow: -3px 0 0 var(--paper), -4px 0 0 var(--rule);
+}
+.colophon-top {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--ink-fade);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 14px;
+  margin-bottom: 60px;
+}
+.title-block {
+  flex: 1;
+}
+.title-block .pretitle {
+  font-family: 'Italiana', serif;
+  font-size: 1rem;
+  letter-spacing: 0.4em;
+  color: var(--ink-soft);
+  margin-bottom: 12px;
+}
+.title-block h1 {
+  font-family: 'Italiana', 'Cormorant Garamond', serif;
+  font-weight: 400;
+  font-size: clamp(3.6rem, 8.5vw, 7.2rem);
+  line-height: 0.92;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.01em;
+}
+.title-block h1 .ampersand {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  color: var(--accent);
+}
+.title-block .subtitle {
+  font-style: italic;
+  font-size: 1.5rem;
+  color: var(--ink-soft);
+  margin-top: 30px;
+  max-width: 30ch;
+  line-height: 1.3;
+}
+.title-block .by {
+  margin-top: 50px;
+  font-size: 0.95rem;
+  color: var(--ink-fade);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.title-block .by strong {
+  display: block;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 500;
+  font-size: 1.4rem;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink);
+  margin-top: 4px;
+}
+.dingbat {
+  font-size: 1.4rem;
+  color: var(--accent);
+  text-align: center;
+  margin: 28px 0;
+  letter-spacing: 1em;
+}
+.colophon-bottom {
+  font-size: 0.85rem;
+  color: var(--ink-fade);
+  font-style: italic;
+  border-top: 1px solid var(--rule);
+  padding-top: 14px;
+  display: flex;
+  justify-content: space-between;
+}
+.hero-right {
+  padding: 80px 60px 60px;
+  background: var(--paper-deep);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.hero-right::before {
+  content: '';
+  position: absolute;
+  inset: 30px;
+  border: 1px solid var(--rule);
+  pointer-events: none;
+}
+.preface {
+  position: relative;
+  z-index: 1;
+  padding: 50px 30px;
+}
+.preface h2 {
+  font-family: 'Italiana', serif;
+  font-weight: 400;
+  font-size: 1.6rem;
+  letter-spacing: 0.18em;
+  margin: 0 0 4px 0;
+  text-align: center;
+}
+.preface .h2-rule {
+  width: 60px;
+  height: 1px;
+  background: var(--accent);
+  margin: 14px auto 28px;
+}
+.preface p {
+  margin: 0 0 1.1em;
+  font-size: 1.02rem;
+  text-align: justify;
+  hyphens: auto;
+  text-indent: 1.5em;
+}
+.preface p.first { text-indent: 0; }
+.preface p.first::first-letter {
+  font-family: 'Italiana', serif;
+  font-size: 3.4em;
+  float: left;
+  line-height: 0.85;
+  padding: 6px 8px 0 0;
+  color: var(--accent);
+}
+.cta-row {
+  margin-top: 30px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+.cta {
+  display: block;
+  padding: 22px 18px;
+  border: 1px solid var(--ink);
+  background: var(--paper);
+  text-align: center;
+  text-decoration: none;
+  color: var(--ink);
+  font-family: 'Cormorant Garamond', serif;
+  transition: all 0.22s ease;
+  position: relative;
+}
+.cta:hover {
+  background: var(--ink);
+  color: var(--paper);
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0 var(--accent);
+}
+.cta .label {
+  display: block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--ink-fade);
+  margin-bottom: 8px;
+}
+.cta:hover .label { color: var(--paper-deep); }
+.cta .name {
+  font-size: 1.5rem;
+  font-style: italic;
+  font-weight: 500;
+}
+.cta .desc {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--ink-fade);
+  margin-top: 6px;
+  font-style: normal;
+}
+.cta:hover .desc { color: var(--paper-deep); opacity: 0.75; }
+
+/* Long-form essay section below the fold */
+.essay {
+  background: var(--paper);
+  border-top: 2px solid var(--ink);
+  padding: 100px 0;
+  position: relative;
+}
+.essay::before {
+  content: '';
+  position: absolute;
+  top: -2px; left: 0; right: 0;
+  height: 6px;
+  background: repeating-linear-gradient(
+    90deg, var(--ink) 0 8px, transparent 8px 12px
+  );
+}
+.essay-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 36px;
+}
+.essay h2 {
+  font-family: 'Italiana', serif;
+  font-weight: 400;
+  font-size: 2.6rem;
+  margin: 0 0 8px;
+  text-align: center;
+  letter-spacing: 0.04em;
+}
+.essay .lead {
+  text-align: center;
+  font-style: italic;
+  color: var(--ink-fade);
+  margin-bottom: 48px;
+}
+.essay h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600;
+  font-style: italic;
+  font-size: 1.5rem;
+  margin: 2.4em 0 0.6em;
+}
+.essay p {
+  margin: 0 0 1.1em;
+  text-align: justify;
+  hyphens: auto;
+}
+.essay p.first-of-section { text-indent: 0; }
+.essay p:not(.first-of-section):not(.lead) { text-indent: 1.6em; }
+.essay blockquote {
+  margin: 1.6em 1.2em;
+  padding-left: 1.4em;
+  border-left: 2px solid var(--accent);
+  font-style: italic;
+  color: var(--ink-soft);
+}
+.pullquote {
+  font-family: 'Italiana', serif;
+  font-size: 1.7rem;
+  line-height: 1.25;
+  text-align: center;
+  margin: 60px auto;
+  max-width: 24ch;
+  color: var(--accent);
+  position: relative;
+}
+.pullquote::before, .pullquote::after {
+  content: '';
+  display: block;
+  width: 80px;
+  height: 1px;
+  background: var(--accent);
+  margin: 18px auto;
+}
+
+footer {
+  border-top: 1px solid var(--rule);
+  padding: 36px;
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-fade);
+}
+
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; }
+  .hero-left { border-right: 0; border-bottom: 1px solid var(--rule); padding: 50px 30px; }
+  .hero-left::after { display: none; }
+  .hero-right { padding: 50px 20px; }
+  .preface { padding: 30px 14px; }
+  .cta-row { grid-template-columns: 1fr; }
+  .title-block h1 { font-size: 4.4rem; }
+}
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-left">
+    <div class="colophon-top">
+      <span>Vol. I &nbsp; — &nbsp; № 1</span>
+      <span>A Reader's Reissue</span>
+    </div>
+    <div class="title-block">
+      <div class="pretitle">A Reader's Reissue of</div>
+      <h1>No Enemy<br><span class="ampersand">but</span> Himself</h1>
+      <p class="subtitle">A novel of 1894, cleaned by machine and given a second ending by hand.</p>
+      <p class="by">
+        Originally written by
+        <strong>Elbert Hubbard</strong>
+      </p>
+    </div>
+    <div class="dingbat">❦</div>
+    <div class="colophon-bottom">
+      <span>The original is in the public domain.</span>
+      <span>This edition: 2026</span>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="preface">
+      <h2>The Project</h2>
+      <div class="h2-rule"></div>
+      <p class="first">Hubbard published <em>No Enemy (But Himself)</em> in 1894 with G. P. Putnam's Sons. It went out of print and into the Library of Congress, where a scanner photographed it page by page and an OCR engine rendered the photographs into text — text full of misread glyphs, broken hyphens, and stray scan-noise.</p>
+      <p>An LLM cleaned the file. A second prompt asked it to write an alternate ending: the same novel, but with the protagonist redeemed instead of drowned, and the Indiana family reconnected by letter.</p>
+      <p>You may read either version below. They are identical for thirty-eight chapters and diverge at the last.</p>
+
+      <div class="cta-row">
+        <a class="cta" href="read.html">
+          <span class="label">Read</span>
+          <span class="name">The Book</span>
+          <span class="desc">Both endings, side by side</span>
+        </a>
+        <a class="cta" href="models.html">
+          <span class="label">About</span>
+          <span class="name">The Tools</span>
+          <span class="desc">LLMs, prices, watt-hours</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="essay">
+  <div class="essay-inner">
+    <h2>An Audience of One</h2>
+    <p class="lead">— on the small, strange privilege of having a book written for you</p>
+
+    <p class="first-of-section">High school English teachers used to give a single piece of advice that has aged better than most: <em>think of your audience.</em> Whom are you writing for? A magistrate? A schoolboy? A coroner's jury? Settle that and the rest follows — vocabulary, length, what to leave out.</p>
+
+    <p>For most of the twentieth century, the writers who got paid wrote for a vast composite reader: the Sunday subscriber, the airport browser, the freshman with a syllabus. The middle-class masses, in plainer English. A book had to find ten thousand of them to cover its printing, and a magazine article had to interest enough strangers to justify the page.</p>
+
+    <p>That arithmetic shaped what got written and what didn't. A specific question — <em>I'd like to read a one-chapter primer on the difference between Stoic and Epicurean ethics, in the voice of a Victorian rector, addressed to me, who already knows the basics of Plato</em> — would never get written for one reader. The economics forbade it.</p>
+
+    <p>The economics no longer forbid it.</p>
+
+    <div class="pullquote">The audience is no longer the masses. The audience is you.</div>
+
+    <h3>What changed</h3>
+    <p class="first-of-section">A modern language model can hold a short conversation with you, accept some files and links, and then — at your instruction — produce an essay, an article, a chapter, a pamphlet, a primer, a sermon, a counter-argument, an alternate ending. The output will be tailored to what it now knows about you: your prior knowledge, your reading level, your aesthetic preferences, the depth you actually want.</p>
+
+    <p>This is a strange privilege, and worth pausing over. For all of literary history, "thinking of your audience" was a generalization away from any particular person. Now it can be the opposite. The model can think of <em>this</em> audience — the one named in this conversation — and produce something that would never be written for anyone else, because no one else asked for it.</p>
+
+    <h3>How this book was made</h3>
+    <p class="first-of-section">As a small demonstration of the principle, here is what produced the volume linked above.</p>
+
+    <p>Step one: a public-domain novel, scanned at the Library of Congress and OCR'd into a fifteen-thousand-line text file rich in errors. The reader described the project, uploaded the file, and asked the model to clean it — strip page numbers, rejoin hyphenated line-breaks, fix common OCR garbles, preserve 1894 punctuation conventions.</p>
+
+    <p>Step two: the reader described the ending she wanted. Hillard, who in the original murders the blind girl and drowns himself, instead repents. The Indiana family reconnects by letter. The blindness — psychosomatic since the night of the barn fire — lifts when the truth comes out. Two new chapters, in Hubbard's own voice.</p>
+
+    <p>The model wrote it. Took roughly fifteen minutes. The prose is not Hubbard's; it imitates him, with semi-colons and Shakespeare epigraphs and the slightly arch narrator. A reader who knows Hubbard well will spot the seams. A reader who doesn't may not.</p>
+
+    <h3>What this is not</h3>
+    <p class="first-of-section">It is not a replacement for original writing. The original ending is bleaker and better — Hubbard understood something hard about Hillard's character that the alternate softens. The happy ending exists because the reader wanted to read it, and now it exists, and the original is still there, three lines away.</p>
+
+    <p>It is not, either, a tool that should be turned on every great book. Most novels are not improved by being optimized for one reader's mood. The point of literature is partly that it isn't yours.</p>
+
+    <p>But for educational writing — primers, summaries, custom textbooks, glosses on difficult subjects — the calculus has changed completely. If you have a question that would, in 1894, have required hiring a private tutor to answer it the way <em>you</em> in particular would understand, you can now have the answer written, in the form you want, in the voice you want, at the depth you want, in the time it takes to read it.</p>
+
+    <p>The audience is no longer the masses. The audience is you. This little reissue is the smallest possible illustration of what that means.</p>
+
+    <hr class="dot">
+
+    <p style="text-align:center; font-style:italic; color:var(--ink-fade); margin-top: 2rem;">For the technical particulars — which models exist, what they cost, how much electricity they draw — see <a href="models.html">The Tools</a>.</p>
+  </div>
+</section>
+
+<footer>
+  Set in Cormorant Garamond, Italiana, & JetBrains Mono · A Reader's Reissue · 2026
+</footer>
+
+</body>
+</html>

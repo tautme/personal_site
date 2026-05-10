@@ -1,0 +1,694 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Tools — On NLP, LLMs, and the State of the Art (May 2026)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Italiana&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+
+:root {
+  --paper: #f4ecdc;
+  --paper-deep: #ece1c8;
+  --ink: #1a1410;
+  --ink-soft: #3a2e25;
+  --ink-fade: #6b5b4c;
+  --rule: #c9b896;
+  --accent: #7a1c1c;
+  --accent-soft: #a83838;
+  --highlight: #f7e8a4;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Cormorant Garamond', 'EB Garamond', Garamond, 'Times New Roman', serif;
+  font-size: 19px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  background-image:
+    radial-gradient(ellipse at top, rgba(255,255,255,0.4), transparent 70%),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0,
+      transparent 3px,
+      rgba(60,40,20,0.012) 3px,
+      rgba(60,40,20,0.012) 4px
+    );
+}
+::selection { background: var(--highlight); color: var(--ink); }
+a { color: var(--accent); text-decoration: none; border-bottom: 1px solid currentColor; }
+a:hover { color: var(--accent-soft); }
+.container { max-width: 1180px; margin: 0 auto; padding: 0 36px; }
+hr.rule { border: 0; height: 1px; background: var(--rule); margin: 2.5rem 0; }
+hr.dot { border: 0; text-align: center; margin: 2rem 0; }
+hr.dot::before { content: '· · ·'; color: var(--ink-fade); letter-spacing: 0.6em; font-size: 1rem; }
+.smallcaps { font-variant: small-caps; letter-spacing: 0.08em; }
+.eyebrow {
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--ink-fade);
+}
+
+body { font-size: 18px; }
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--paper);
+  border-bottom: 2px solid var(--ink);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.74rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.topbar a { color: var(--ink); text-decoration: none; border: 0; padding-right: 24px; }
+.topbar a:hover { color: var(--accent); }
+.topbar .sep { color: var(--rule); }
+.topbar .title-tiny {
+  font-family: 'Italiana', serif;
+  text-transform: none;
+  font-size: 1rem;
+  letter-spacing: 0.06em;
+}
+
+.masthead {
+  border-bottom: 4px double var(--ink);
+  padding: 80px 0 30px;
+  text-align: center;
+}
+.masthead .kicker {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--ink-fade);
+  margin-bottom: 16px;
+}
+.masthead h1 {
+  font-family: 'Italiana', serif;
+  font-weight: 400;
+  font-size: clamp(3rem, 7vw, 5.6rem);
+  margin: 0;
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+.masthead .dek {
+  margin-top: 22px;
+  font-style: italic;
+  font-size: 1.3rem;
+  color: var(--ink-soft);
+  max-width: 50ch;
+  margin-left: auto;
+  margin-right: auto;
+}
+.masthead .dateline {
+  margin-top: 22px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--ink-fade);
+}
+
+article {
+  padding: 60px 0;
+}
+article h2 {
+  font-family: 'Italiana', serif;
+  font-weight: 400;
+  font-size: 2.2rem;
+  margin: 2.5em 0 0.4em;
+  letter-spacing: 0.02em;
+}
+article h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600;
+  font-style: italic;
+  font-size: 1.4rem;
+  color: var(--accent);
+  margin: 1.8em 0 0.4em;
+}
+article p {
+  max-width: 70ch;
+  margin: 0 auto 1.1em;
+  text-align: justify;
+  hyphens: auto;
+}
+article p.first-of-section { text-indent: 0; }
+article p:not(.first-of-section) { text-indent: 1.5em; }
+article h2 + p, article h3 + p { text-indent: 0; }
+
+article .narrow { max-width: 70ch; margin: 0 auto; }
+article ul.glossary {
+  max-width: 70ch;
+  margin: 0 auto 1.4em;
+  list-style: none;
+  padding: 0;
+  border-top: 1px solid var(--rule);
+}
+article ul.glossary li {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--rule);
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 24px;
+}
+article ul.glossary li .term {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  padding-top: 2px;
+}
+article ul.glossary li .def { color: var(--ink-soft); }
+
+/* The TABLE — the centerpiece */
+.table-wrap {
+  margin: 60px -36px;
+  overflow-x: auto;
+  padding: 0 36px;
+}
+table.models {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+}
+table.models thead th {
+  background: var(--ink);
+  color: var(--paper);
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-size: 0.66rem;
+  text-align: left;
+  padding: 14px 12px;
+  vertical-align: bottom;
+  border-right: 1px solid var(--ink-fade);
+}
+table.models thead th.num { text-align: right; }
+table.models thead th .sub {
+  display: block;
+  font-size: 0.6rem;
+  color: var(--rule);
+  margin-top: 4px;
+  letter-spacing: 0.08em;
+}
+table.models tbody td {
+  padding: 14px 12px;
+  vertical-align: top;
+  border-bottom: 1px solid var(--rule);
+  border-right: 1px dotted var(--rule);
+}
+table.models tbody tr:hover { background: var(--paper-deep); }
+table.models tbody tr.row-us { border-left: 4px solid #1a4d8c; }
+table.models tbody tr.row-cn { border-left: 4px solid #c41e3a; }
+table.models tbody tr.row-eu { border-left: 4px solid #003d7a; }
+table.models td.model .m-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  font-style: italic;
+  color: var(--ink);
+  letter-spacing: 0;
+  text-transform: none;
+}
+table.models td.model .m-lab {
+  font-size: 0.66rem;
+  color: var(--ink-fade);
+  margin-top: 2px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+table.models td.flag {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.95rem;
+  text-transform: none;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+table.models td.lic {
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+}
+table.models td.ctx {
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+}
+table.models td.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+table.models td.num.wh {
+  color: var(--accent);
+  font-weight: 700;
+}
+table.models td.notes {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.95rem;
+  text-transform: none;
+  letter-spacing: 0;
+  font-style: italic;
+  color: var(--ink-soft);
+  min-width: 280px;
+}
+
+.legend {
+  max-width: 70ch;
+  margin: 0 auto 30px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: var(--ink-fade);
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.legend span { display: inline-flex; align-items: center; gap: 8px; }
+.legend i { display: inline-block; width: 14px; height: 14px; border: 1px solid var(--rule); }
+.legend i.us { background: #1a4d8c; }
+.legend i.cn { background: #c41e3a; }
+.legend i.eu { background: #003d7a; }
+
+.caveat {
+  max-width: 70ch;
+  margin: 30px auto;
+  padding: 22px 26px;
+  border: 1px solid var(--ink-fade);
+  border-left: 4px solid var(--accent);
+  background: var(--paper-deep);
+  font-style: italic;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+}
+.caveat strong { font-style: normal; color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase; font-size: 0.78rem; display: block; margin-bottom: 6px; }
+
+footer {
+  border-top: 1px solid var(--rule);
+  padding: 36px;
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-fade);
+}
+@media (max-width: 900px) {
+  article ul.glossary li { grid-template-columns: 1fr; gap: 4px; }
+  article ul.glossary li .term { padding-top: 0; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="index.html">← Home</a>
+  <a href="read.html">Read the Book</a>
+  <span class="title-tiny" style="margin-left:auto; color:var(--ink-fade)">The Tools</span>
+</div>
+
+<div class="container">
+
+<header class="masthead">
+  <div class="kicker">A Field Guide</div>
+  <h1>The Tools</h1>
+  <p class="dek">On natural-language processing, large language models, and the state of the art as of this morning.</p>
+  <div class="dateline">May 2026 &nbsp;·&nbsp; Updated weekly because everything changes weekly</div>
+</header>
+
+<article>
+  <p class="first-of-section narrow" style="font-size: 1.08rem; max-width: 70ch; margin: 0 auto 1.4em;">
+    The book in the next room was edited by software that, ten years ago, did not exist. This page exists because if you've read this far, you might want to know what that software is, who makes it, what it costs, and what it draws from the wall.
+  </p>
+
+  <h2>The terms, briefly</h2>
+  <p class="first-of-section">If you've been around the field, skip to the table. If you haven't, the vocabulary tends to put up a fence around the conversation. Here is the fence, with a stile.</p>
+
+  <ul class="glossary">
+    <li><span class="term">NLP</span><span class="def"><strong>Natural Language Processing.</strong> The umbrella discipline — getting computers to handle human language. It predates LLMs by sixty years and includes spell-checkers, translation systems, search engines, and everything else that touches text.</span></li>
+    <li><span class="term">LLM</span><span class="def"><strong>Large Language Model.</strong> A neural network trained to predict the next chunk of text, given some prior text. The "large" refers to the parameter count — billions to trillions of numerical weights — and to the training data, typically a substantial fraction of the public internet plus licensed books.</span></li>
+    <li><span class="term">Token</span><span class="def">The unit a model reads and writes. Roughly three-quarters of a word in English. "Hello" is one token; "antidisestablishmentarian" is several. All pricing is per million tokens.</span></li>
+    <li><span class="term">Context window</span><span class="def">How much text the model can hold in its head at once — the prompt plus its answer. A 200K-token window is roughly 150,000 English words, or three short novels.</span></li>
+    <li><span class="term">GPT</span><span class="def"><strong>Generative Pretrained Transformer.</strong> The architecture most modern LLMs share. OpenAI uses the term in product names; everyone else trains the same underlying thing.</span></li>
+    <li><span class="term">Open weights</span><span class="def">The model's trained parameters are downloadable. You can run it yourself on your own hardware, fine-tune it, inspect it. Distinct from open-source: the training code and data may not be public.</span></li>
+    <li><span class="term">Inference</span><span class="def">Running a trained model to get an answer (as opposed to training it in the first place). Inference is what costs you money per token and electricity per query.</span></li>
+    <li><span class="term">Reasoning model</span><span class="def">A model that generates a chain of intermediate "thinking" tokens before answering. Slower, costlier, more accurate on hard problems. Uses 10–70× the energy of a plain query.</span></li>
+  </ul>
+
+  <h2>What changed, quickly</h2>
+  <p class="first-of-section">Three years ago, GPT-4 was the only model worth the name and cost roughly thirty dollars per million tokens of output. That number is now under one dollar at the same quality, and the public list of frontier labs has gone from one to roughly nine — split across the United States, China, and Europe — with a self-hostable open-weights tier closing in fast on the closed frontier.</p>
+
+  <p>Four observations from May 2026:</p>
+
+  <p>The price gap between American and Chinese frontier models is now <em>5 to 25×</em> at equivalent benchmark scores. DeepSeek V4-Pro, released in late April under an MIT license, scores 80.6% on SWE-bench Verified — within striking distance of Claude Opus and GPT-5.5 — at one-twentieth the per-token price.</p>
+
+  <p>The gap between proprietary and open-weights models, on most benchmarks, has narrowed to noise. Qwen 3.6, DeepSeek V4, GLM-5, and Kimi K2.6 are all genuinely frontier-class on the work they were trained for. A laptop with a recent GPU can now run a model that, eighteen months ago, would have been the strongest in the world.</p>
+
+  <p>The energy question, which dominated headlines in 2024, has settled. A typical text query draws roughly a quarter to a third of a watt-hour — about a second of microwave time. Reasoning queries draw more; coding-agent sessions a great deal more. But the median chatbot conversation is, in energy terms, a rounding error against any hour spent watching streaming video. The water question is similar.</p>
+
+  <p>Specialization has replaced supremacy. No single model wins every category. Claude leads at writing and code review; GPT-5.5 at structured reasoning and computer-use agents; Gemini 3.1 Pro at multimodal and abstract reasoning; DeepSeek and Qwen at price-per-quality; Mistral at output-heavy work and EU compliance.</p>
+
+  <h2>The models, with prices and watt-hours</h2>
+  <p class="first-of-section">A non-exhaustive snapshot. Prices are public-list, in US dollars per million tokens, May 2026. Energy is estimated for a "typical" text query (~500 input + ~500 output tokens) and rounded; figures vary widely by hardware, batching, and load. Reasoning-mode usage on the larger models can be 10–70× the listed figure.</p>
+
+  <div class="legend">
+    <span><i class="us"></i> United States</span>
+    <span><i class="cn"></i> China</span>
+    <span><i class="eu"></i> Europe</span>
+  </div>
+
+  <div class="table-wrap">
+  <table class="models">
+    <thead>
+      <tr>
+        <th>Model</th>
+        <th>Origin</th>
+        <th>License</th>
+        <th>Context</th>
+        <th class="num">Input<span class="sub">$ / M tok</span></th>
+        <th class="num">Output<span class="sub">$ / M tok</span></th>
+        <th class="num">Energy<span class="sub">~typ. query</span></th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+
+    <tr class="row-us">
+      <td class="model"><div class="m-name">Claude Opus 4.7</div><div class="m-lab">Anthropic</div></td>
+      <td class="flag">🇺🇸 USA</td>
+      <td class="lic">Proprietary</td>
+      <td class="ctx">200K</td>
+      <td class="num">$15.00</td>
+      <td class="num">$75.00</td>
+      <td class="num wh">1.20 Wh</td>
+      <td class="notes">Frontier reasoning + writing. Powers this site&#x27;s editing.</td>
+    </tr>
+
+    <tr class="row-us">
+      <td class="model"><div class="m-name">Claude Sonnet 4.6</div><div class="m-lab">Anthropic</div></td>
+      <td class="flag">🇺🇸 USA</td>
+      <td class="lic">Proprietary</td>
+      <td class="ctx">200K</td>
+      <td class="num">$3.00</td>
+      <td class="num">$15.00</td>
+      <td class="num wh">0.40 Wh</td>
+      <td class="notes">Workhorse. Best price-to-quality at frontier coding.</td>
+    </tr>
+
+    <tr class="row-us">
+      <td class="model"><div class="m-name">Claude Haiku 4.5</div><div class="m-lab">Anthropic</div></td>
+      <td class="flag">🇺🇸 USA</td>
+      <td class="lic">Proprietary</td>
+      <td class="ctx">200K</td>
+      <td class="num">$1.00</td>
+      <td class="num">$5.00</td>
+      <td class="num wh">0.15 Wh</td>
+      <td class="notes">Cheap, fast, good enough for most tasks.</td>
+    </tr>
+
+    <tr class="row-us">
+      <td class="model"><div class="m-name">GPT-5.5 (xhigh)</div><div class="m-lab">OpenAI</div></td>
+      <td class="flag">🇺🇸 USA</td>
+      <td class="lic">Proprietary</td>
+      <td class="ctx">1M</td>
+      <td class="num">$5.00</td>
+      <td class="num">$20.00</td>
+      <td class="num wh">1.50 Wh</td>
+      <td class="notes">Top of LLM Stats Intelligence Index, May 2026.</td>
+    </tr>
+
+    <tr class="row-us">
+      <td class="model"><div class="m-name">GPT-5.4</div><div class="m-lab">OpenAI</div></td>
+      <td class="flag">🇺🇸 USA</td>
+      <td class="lic">Proprietary</td>
+      <td class="ctx">1M</td>
+      <td class="num">$2.50</td>
+      <td class="num">$15.00</td>
+      <td class="num wh">0.60 Wh</td>
+      <td class="notes">General default in ChatGPT Plus. Strong agentic work.</td>
+    </tr>
+
+    <tr class="row-us">
+      <td class="model"><div class="m-name">GPT-5 nano</div><div class="m-lab">OpenAI</div></td>
+      <td class="flag">🇺🇸 USA</td>
+      <td class="lic">Proprietary</td>
+      <td class="ctx">1M</td>
+      <td class="num">$0.10</td>
+      <td class="num">$0.40</td>
+      <td class="num wh">50 mWh</td>
+      <td class="notes">Cheapest tier from OpenAI.</td>
+    </tr>
+
+    <tr class="row-us">
+      <td class="model"><div class="m-name">Gemini 3.1 Pro</div><div class="m-lab">Google DeepMind</div></td>
+      <td class="flag">🇺🇸 USA</td>
+      <td class="lic">Proprietary</td>
+      <td class="ctx">2M</td>
+      <td class="num">$2.00</td>
+      <td class="num">$12.00</td>
+      <td class="num wh">0.80 Wh</td>
+      <td class="notes">Leader on multimodal &amp; ARC-AGI. Massive context.</td>
+    </tr>
+
+    <tr class="row-us">
+      <td class="model"><div class="m-name">Gemini 3 Flash</div><div class="m-lab">Google DeepMind</div></td>
+      <td class="flag">🇺🇸 USA</td>
+      <td class="lic">Proprietary</td>
+      <td class="ctx">1M</td>
+      <td class="num">$0.15</td>
+      <td class="num">$0.60</td>
+      <td class="num wh">70 mWh</td>
+      <td class="notes">Cheap, fast multimodal. Strong SWE-bench for size.</td>
+    </tr>
+
+    <tr class="row-us">
+      <td class="model"><div class="m-name">Grok 4</div><div class="m-lab">xAI</div></td>
+      <td class="flag">🇺🇸 USA</td>
+      <td class="lic">Proprietary</td>
+      <td class="ctx">256K</td>
+      <td class="num">$2.00</td>
+      <td class="num">$15.00</td>
+      <td class="num wh">0.60 Wh</td>
+      <td class="notes">Real-time X data access. Less filtered style.</td>
+    </tr>
+
+    <tr class="row-cn">
+      <td class="model"><div class="m-name">DeepSeek V4-Pro</div><div class="m-lab">DeepSeek</div></td>
+      <td class="flag">🇨🇳 China</td>
+      <td class="lic">MIT (open weights)</td>
+      <td class="ctx">1M</td>
+      <td class="num">$0.30</td>
+      <td class="num">$0.50</td>
+      <td class="num wh">0.50 Wh</td>
+      <td class="notes">1.6T params / 49B active. Frontier benchmarks at 5–25× lower price.</td>
+    </tr>
+
+    <tr class="row-cn">
+      <td class="model"><div class="m-name">Qwen 3.6-72B-dense</div><div class="m-lab">Alibaba</div></td>
+      <td class="flag">🇨🇳 China</td>
+      <td class="lic">Apache 2.0 (open weights)</td>
+      <td class="ctx">256K</td>
+      <td class="num">$0.50</td>
+      <td class="num">$1.50</td>
+      <td class="num wh">0.40 Wh</td>
+      <td class="notes">Self-hostable. Beats Gemma 4 on coding benchmarks.</td>
+    </tr>
+
+    <tr class="row-cn">
+      <td class="model"><div class="m-name">Qwen 3.6-Max</div><div class="m-lab">Alibaba</div></td>
+      <td class="flag">🇨🇳 China</td>
+      <td class="lic">Proprietary</td>
+      <td class="ctx">1M</td>
+      <td class="num">$1.20</td>
+      <td class="num">$6.00</td>
+      <td class="num wh">0.70 Wh</td>
+      <td class="notes">Closed flagship. Multilingual production leader.</td>
+    </tr>
+
+    <tr class="row-cn">
+      <td class="model"><div class="m-name">Kimi K2.6</div><div class="m-lab">Moonshot AI</div></td>
+      <td class="flag">🇨🇳 China</td>
+      <td class="lic">Modified MIT (open weights)</td>
+      <td class="ctx">256K</td>
+      <td class="num">$0.95</td>
+      <td class="num">$3.50</td>
+      <td class="num wh">0.50 Wh</td>
+      <td class="notes">Highest GPQA among open-weights. Strong sub-agent role.</td>
+    </tr>
+
+    <tr class="row-cn">
+      <td class="model"><div class="m-name">GLM-5</div><div class="m-lab">Z.AI / Zhipu</div></td>
+      <td class="flag">🇨🇳 China</td>
+      <td class="lic">Open weights</td>
+      <td class="ctx">128K</td>
+      <td class="num">$0.50</td>
+      <td class="num">$1.50</td>
+      <td class="num wh">0.40 Wh</td>
+      <td class="notes">Strong agentic and coding scores.</td>
+    </tr>
+
+    <tr class="row-eu">
+      <td class="model"><div class="m-name">Mistral Large 3</div><div class="m-lab">Mistral AI</div></td>
+      <td class="flag">🇫🇷 France</td>
+      <td class="lic">Proprietary</td>
+      <td class="ctx">128K</td>
+      <td class="num">$2.00</td>
+      <td class="num">$6.00</td>
+      <td class="num wh">0.50 Wh</td>
+      <td class="notes">GDPR-native EU residency. Cheapest output among premium.</td>
+    </tr>
+
+    <tr class="row-eu">
+      <td class="model"><div class="m-name">Mistral Large 3 (open)</div><div class="m-lab">Mistral AI</div></td>
+      <td class="flag">🇫🇷 France</td>
+      <td class="lic">Apache 2.0 (open weights)</td>
+      <td class="ctx">262K</td>
+      <td class="num">$0.50</td>
+      <td class="num">$1.50</td>
+      <td class="num wh">0.50 Wh</td>
+      <td class="notes">December 2025 release. 675B total / 41B active MoE.</td>
+    </tr>
+
+    <tr class="row-eu">
+      <td class="model"><div class="m-name">Mistral Medium 3</div><div class="m-lab">Mistral AI</div></td>
+      <td class="flag">🇫🇷 France</td>
+      <td class="lic">Proprietary</td>
+      <td class="ctx">131K</td>
+      <td class="num">$0.40</td>
+      <td class="num">$2.00</td>
+      <td class="num wh">0.20 Wh</td>
+      <td class="notes">Balanced workhorse. EU data residency.</td>
+    </tr>
+
+    <tr class="row-eu">
+      <td class="model"><div class="m-name">Mistral Small 3.1</div><div class="m-lab">Mistral AI</div></td>
+      <td class="flag">🇫🇷 France</td>
+      <td class="lic">Apache 2.0 (open weights)</td>
+      <td class="ctx">128K</td>
+      <td class="num">$0.20</td>
+      <td class="num">$0.60</td>
+      <td class="num wh">0.10 Wh</td>
+      <td class="notes">Cheap, capable, self-hostable on a single GPU.</td>
+    </tr>
+
+    <tr class="row-eu">
+      <td class="model"><div class="m-name">Ministral 8B</div><div class="m-lab">Mistral AI</div></td>
+      <td class="flag">🇫🇷 France</td>
+      <td class="lic">Apache 2.0 (open weights)</td>
+      <td class="ctx">128K</td>
+      <td class="num">$0.10</td>
+      <td class="num">$0.10</td>
+      <td class="num wh">40 mWh</td>
+      <td class="notes">Edge / on-device. Pennies per million tokens.</td>
+    </tr>
+
+    <tr class="row-us">
+      <td class="model"><div class="m-name">Llama 4 Maverick</div><div class="m-lab">Meta</div></td>
+      <td class="flag">🇺🇸 USA</td>
+      <td class="lic">Llama 4 Community License (open weights)</td>
+      <td class="ctx">1M</td>
+      <td class="num">$0.50</td>
+      <td class="num">$1.50</td>
+      <td class="num wh">0.40 Wh</td>
+      <td class="notes">MoE 400B / 17B active. Free if self-hosted.</td>
+    </tr>
+
+    <tr class="row-us">
+      <td class="model"><div class="m-name">Llama 4 Scout</div><div class="m-lab">Meta</div></td>
+      <td class="flag">🇺🇸 USA</td>
+      <td class="lic">Llama 4 Community License (open weights)</td>
+      <td class="ctx">10M</td>
+      <td class="num">$0.20</td>
+      <td class="num">$0.60</td>
+      <td class="num wh">0.20 Wh</td>
+      <td class="notes">Largest open-weights context window. Cheap to host.</td>
+    </tr>
+
+    <tr class="row-us">
+      <td class="model"><div class="m-name">GPT-oss 120b</div><div class="m-lab">OpenAI</div></td>
+      <td class="flag">🇺🇸 USA</td>
+      <td class="lic">Apache 2.0 (open weights)</td>
+      <td class="ctx">128K</td>
+      <td class="num">$0.10</td>
+      <td class="num">$0.40</td>
+      <td class="num wh">0.30 Wh</td>
+      <td class="notes">OpenAI&#x27;s first open release in years. Self-hostable.</td>
+    </tr>
+
+    <tr class="row-us">
+      <td class="model"><div class="m-name">Gemma 4 (27B)</div><div class="m-lab">Google DeepMind</div></td>
+      <td class="flag">🇺🇸 USA</td>
+      <td class="lic">Apache 2.0 (open weights)</td>
+      <td class="ctx">128K</td>
+      <td class="num">$0.10</td>
+      <td class="num">$0.30</td>
+      <td class="num wh">0.10 Wh</td>
+      <td class="notes">On-device friendly. Strong size-for-quality.</td>
+    </tr>
+
+    <tr class="row-us">
+      <td class="model"><div class="m-name">Phi-4</div><div class="m-lab">Microsoft</div></td>
+      <td class="flag">🇺🇸 USA</td>
+      <td class="lic">MIT (open weights)</td>
+      <td class="ctx">32K</td>
+      <td class="num">$0.05</td>
+      <td class="num">$0.15</td>
+      <td class="num wh">40 mWh</td>
+      <td class="notes">Tiny, runs on a laptop. Punches above weight.</td>
+    </tr>
+
+    <tr class="row-us">
+      <td class="model"><div class="m-name">Nemotron 3 Super</div><div class="m-lab">NVIDIA</div></td>
+      <td class="flag">🇺🇸 USA</td>
+      <td class="lic">NVIDIA Open Model License (open weights)</td>
+      <td class="ctx">256K</td>
+      <td class="num">$0.30</td>
+      <td class="num">$1.00</td>
+      <td class="num wh">0.30 Wh</td>
+      <td class="notes">Hybrid Mamba-Transformer. Optimized for agentic tools.</td>
+    </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="caveat"><strong>Health warning</strong>This table is correct as of compilation and will be partly wrong by next week. Prices fall, models ship, leaderboards reshuffle. The energy figures are <em>estimates</em> drawn from public disclosures (Google's 0.24 Wh/query, OpenAI's 0.34 Wh/query, Epoch AI benchmarks) extrapolated by parameter count and active weights — not from per-model audits, which providers do not publish. Use these numbers for relative comparison, not absolute claims.</div>
+
+  <h2>How to choose</h2>
+  <p class="first-of-section">For the kind of work that produced this site — cleaning a public-domain text and writing imitation-period prose — any frontier model from the top of the table will do. The differences between them at this task are smaller than the differences in your prompts.</p>
+
+  <p>For most personal use, a mid-tier model (Claude Sonnet, GPT-5.4, Gemini 3 Flash, Mistral Medium, Qwen 3.6-72B) is enough and costs under a fifth as much as the top tier. The frontier models matter when you're doing genuinely hard reasoning, very long context work, or anything where the tail of quality matters more than the average.</p>
+
+  <p>For privacy-sensitive work — patient records, legal discovery, anything covered by GDPR — the European models or self-hosted open-weights are the only honest answer. Mistral's EU data residency and Apache-licensed weights are designed for exactly this use.</p>
+
+  <p>For high volume on a budget, the open-weights tier — DeepSeek V4, Qwen 3.6, Llama 4 — is now genuinely competitive on quality and unbeatable on cost if you have GPU capacity to spare. The breakeven against API pricing is in the tens of millions of tokens per day.</p>
+
+  <h2>A small honest note</h2>
+  <p class="first-of-section">This page was written by Claude Opus 4.7, the same model that cleaned and re-edited <em>No Enemy</em>. Anthropic — its maker — appears in the table at the top. I have tried to describe it accurately, alongside its competitors, but you should know who is writing about whom. The table includes models that score better than Claude on several benchmarks. They do.</p>
+
+  <p>The web is full of comparison articles about LLMs. Most are written to sell something. This one was written because someone wanted to know.</p>
+</article>
+
+</div>
+
+<footer>
+  Set in Cormorant Garamond, Italiana, & JetBrains Mono · A Reader's Reissue · May 2026
+</footer>
+
+</body>
+</html>
