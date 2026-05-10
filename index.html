@@ -4,62 +4,57 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>adm</title>
-<link rel="stylesheet" href="style.css">
+<style>
+  body { max-width: 720px; margin: 2em auto; padding: 0 1em;
+         font-family: 'Iowan Old Style', Palatino, Georgia, serif;
+         line-height: 1.6; color: #1a1a1a; background: #fff; }
+  h1 { margin: 0 0 0.2em; }
+  h2 { margin-top: 2.2em; padding-top: 1em;
+       border-top: 1px solid #d8d4cc;
+       font-size: 1rem; letter-spacing: 0.08em; text-transform: uppercase; }
+  ul { padding-left: 1.2em; }
+  li { margin: 0.2em 0; }
+  img { max-width: 100%; height: auto; display: block; margin: 1em 0; }
+  a { color: #4a3f2f; }
+</style>
 </head>
 <body>
 
-<main class="wrap">
+<h1>adm</h1>
 
-  <h1>adm</h1>
-
-  <!-- Bio: edit these paragraphs. This is the only place "about" lives. -->
-  <p>making a webside with claude code and asking claude to write on ideas</p>
-  <p>contact &mdash; <a href="mailto:adm@fastmail.com">adm's fast mail</a></p>
+<p>making things on the web.</p>
+<p>contact &mdash; <a href="mailto:adm@fastmail.com">adm@fastmail.com</a></p>
 
 
-  <!-- ============ ESSAYS ============
-       To add: drop a new file in essays/ and add ONE <li> line below. -->
-  <h2>Writing</h2>
-  <ul>
-    <li><a href="essays/sessions-contexts-new-literacy.html">On Sessions, Contexts, and the New Literacy</a></li>
-    <li><a href="essays/looms-letters-language-models.html">On Looms, Letters, and Language Models</a></li>
-    <li><a href="essays/organize-leisure-inflation.html">On Organization, Notepads, and Leisure Inflation</a></li>
-  </ul>
+<!-- ============ WRITING ============
+     To add: drop a new .html file in essays/ and add one <li> below. -->
+<h2>Writing</h2>
+<ul>
+  <li><a href="essays/sessions-contexts-new-literacy.html">On Sessions, Contexts, and the New Literacy</a></li>
+  <li><a href="essays/looms-letters-language-models.html">On Looms, Letters, and Language Models</a></li>
+  <li><a href="essays/organize-leisure-inflation.html">On Organization, Notepads, and Leisure Inflation</a></li>
+</ul>
 
 
-  <!-- ============ PROJECTS ============
-       To add: drop a new file in projects/ and add ONE <li> line below. -->
-  <h2>Projects</h2>
-  <ul>
-    <li><a href="projects/sensor-etch.html">Sensor Etch</a></li>
-  </ul>
+<!-- ============ PROJECTS ============
+     Projects live in projects/ and are named project001 through project999.
+     Two patterns work:
+       projects/project001.html         (standalone file)
+       projects/project002/index.html   (folder, for projects with assets)
+     Drop one in, then add one <li> below to link it. -->
+<h2>Projects</h2>
+<ul>
+  <li><a href="projects/project001.html">project001 &mdash; example standalone page</a></li>
+  <li><a href="projects/project002/">project002 &mdash; example folder project</a></li>
+  <li><a href="projects/sensor-etch.html">Sensor Etch</a></li>
+</ul>
 
 
-  <!-- ============ PHOTOS ============
-       To add: name a photo 1.jpg, 2.jpg, 3.jpg, ... and drop it in photos/.
-       It loads automatically. No editing here. -->
-  <h2>Photos</h2>
-  <div id="photos" class="gallery"></div>
+<!-- ============ PHOTOS ============
+     To add: drop the file in photos/ and add one <img> below. -->
+<h2>Photos</h2>
+<img src="photos/1.jpeg" alt="">
+<img src="photos/2.jpg" alt="">
 
-
-  <!-- ============ MUSIC ============
-       To add: name an audio file 1.mp3, 2.mp3, ... and drop it in music/.
-       It loads automatically. No editing here. -->
-  <h2>Music</h2>
-  <div id="music" class="music-list"></div>
-
-
-  <!-- ============ SUPPORT (uncomment when ready) ============ -->
-  <!--
-  <h2>Support</h2>
-  <ul>
-    <li><a href="https://buymeacoffee.com/yourname">Buy me a coffee</a></li>
-    <li><a href="https://patreon.com/yourname">Patreon</a></li>
-  </ul>
-  -->
-
-</main>
-
-<script src="script.js"></script>
 </body>
 </html>
